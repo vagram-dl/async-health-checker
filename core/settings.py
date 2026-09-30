@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'drf-spectacular',
+    'drf_spectacular',
     'django_prometheus',
     'checker',
 ]
@@ -81,8 +81,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'health_checker_db',
         'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST':'127.0.0.1',
+        'PASSWORD': '10082007hello',
+            'HOST':'127.0.0.1',
         'PORT':'3306',
         'OPTIONS':{
             'charset':'utf8mb4',
