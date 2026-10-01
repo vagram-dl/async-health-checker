@@ -109,6 +109,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Async Health Checker API',
+    'DESCRIPTION': 'Асинхронный агрегатор статусов веб-ресурсов',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
