@@ -136,3 +136,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+REDIS_URL = "redis://default:Xc%25VEn%3FB%2A8TZ%26N@72.56.250.97:6379"

@@ -1,6 +1,6 @@
 import uuid
-from turtle import readconfig
 
+from asgiref.sync import async_to_sync
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,15 +9,18 @@ from drf_spectacular.utils import extend_schema
 
 from .serializers import TaskCreateSerializer, CheckResultSerializer
 from .models import CheckResult
+from .producer import send_task_to_redis
 
 class CreateTaskView(APIView):
     @extend_schema(request=TaskCreateSerializer, responses={201:dict})
-    async def post(self, request):
+    def post(self, request):
         serializer = TaskCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         urls = serializer.validated_data['urls']
 
         task_id = uuid.uuid4()
+
+        async_to_sync(send_task_to_redis)(str(task_id),urls)
 
         return Response({
             "task_id":str(task_id),
