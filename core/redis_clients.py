@@ -1,18 +1,33 @@
-import redis.asyncio as redis
-from django.conf import settings
+import json
 
-redis_client = redis.from_url(
-    settings.REDIS_URL,
-    decode_responses = True,
-    encoding = "utf-8",
-    protocol = 2,
-    socket_timeout=10,
-    socket_connect_timeout=10
-)
+
+class MockAsyncRedis:
+    def __init__(self):
+        self._queues = {}
+
+    async def lpush(self, key: str, value: str):
+        if key not in self._queues:
+            self._queues[key] = []
+        self._queues[key].insert(0, value)
+        print(f"[MOCK REDIS] Успешно добавлено в '{key}'. Элементов в очереди: {len(self._queues[key])}")
+        return len(self._queues[key])
+
+    async def rpop(self, key: str):
+        if key in self._queues and self._queues[key]:
+            value = self._queues[key].pop()
+            print(f"[MOCK REDIS] Успешно извлечено из '{key}'. Осталось элементов: {len(self._queues[key])}")
+            return value
+        return None
+
+    async def ping(self):
+        return True
+
+redis_client = MockAsyncRedis()
 
 async def check_redis_connection():
     try:
-        await redis_client.ping()
-        print("Redis подключен успешно!")
+        result = await redis_client.ping()
+        if result:
+            print("Mock Redis подключен и работает успешно!")
     except Exception as e:
-        print(f"Ошибка подключения к Redis: {e}")
+        print(f"Ошибка подключения к Mock Redis: {e}")

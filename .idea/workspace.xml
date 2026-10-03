@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d0b7e36-3f02-40f4-a9a8-eb06c13c0d44" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/checker/producer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/redis_clients.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checker/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/redis_clients.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/redis_clients.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
