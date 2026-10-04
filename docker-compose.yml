@@ -17,10 +17,33 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: health_checker_db
+      MYSQL_USER: django_user
+      MYSQL_PASSWORD: django_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+  web:
+    build: .
+    container_name: health_checker_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - USE_MOCK_REDIS=False
+      - REDIS_URL=redis://redis:6379/0
+      - DB_NAME=health_checker_db
+      - DB_USER=django_user
+      - DB_PASSWORD=django_password
+      - DB_HOST=mysql
+      - DB_PORT=3306
+    depends_on:
+      - redis
+      - mysql
     restart: unless-stopped
 
 volumes:
