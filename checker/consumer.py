@@ -26,16 +26,19 @@ async def run_worker():
 
     while True:
         try:
-            task_json = await redis_client.rpop("task_queue")
+           result = await redis_client.brpop("task_queue", timeout=10)
 
-            if task_json:
-                await process_task(task_json)
-            else:
-                await asyncio.sleep(1)
+           if result:
+               queue_name, task_json = result
+               print(f"Воркер получил задачу из очереди '{queue_name}'")
+               await process_task(task_json)
+           else:
+               print("Таймаут brpop: задач нет, продолжаем ожидание...")
 
         except Exception as e:
             print(f"Критическая ошибка в цикле воркера: {e}")
             await asyncio.sleep(5)
+
 
 if __name__ == "__main__":
     asyncio.run(run_worker())
