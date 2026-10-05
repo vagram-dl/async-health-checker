@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,15 +79,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'health_checker_db',
-        'USER': 'root',
-        'PASSWORD': '10082007hello',
-            'HOST':'127.0.0.1',
-        'PORT':'3306',
-        'OPTIONS':{
-            'charset':'utf8mb4',
-        },
+        'ENGINE': 'django.db.backends.mysql' if os.getenv('DB_HOST') else 'django.db.backends.sqlite3',
+        'NAME': os.getenv('DB_NAME', 'health_checker_db') if os.getenv('DB_HOST') else BASE_DIR / 'db.sqlite3',
+        'USER': os.getenv('DB_USER', 'django_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'django_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 

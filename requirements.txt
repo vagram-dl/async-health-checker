@@ -1,0 +1,6 @@
+Django>=4.2,<5.0
+djangorestframework>=3.14
+redis>=5.0
+aiohttp>=3.9
+PyMySQL>=1.1
+python-dotenv>=1.0
