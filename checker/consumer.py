@@ -1,9 +1,16 @@
+import django
+import os
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+django.setup()
+
 import json
 import asyncio
 import time
 import aiohttp
 from core.redis_clients import redis_client
 from checker.models import CheckResult
+
 
 async def check_single_url(session: aiohttp.ClientSession, url: str)->dict:
     try:
