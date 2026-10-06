@@ -11,12 +11,15 @@ import aiohttp
 from core.redis_clients import redis_client
 from checker.models import CheckResult
 import signal
+import logging
+
+logger = logging.getLogger(__name__)
 
 stop_event = asyncio.Event()
 
 def handle_stop_signal():
     if not stop_event.is_set():
-        print("\n️ Получен сигнал остановки (SIGINT/SIGTERM). Завершаю работу после текущей задачи...")
+        logger.warning("\nПолучен сигнал остановки (SIGINT/SIGTERM). Завершаю работу после текущей задачи...")
         stop_event.set()
 
 
@@ -76,9 +79,9 @@ async def save_results(task_id:str, results:list):
 
     if results_to_create:
         await CheckResult.objects.abulk_create(results_to_create)
-        print(f"Успешно сохранено {len(results_to_create)} результатов в БД для задачи {task_id}")
+        logger.warning(f"Успешно сохранено {len(results_to_create)} результатов в БД для задачи {task_id}")
     else:
-        print("Нет результатов для сохранения в БД")
+        logger.warning("Нет результатов для сохранения в БД")
 
 async def process_task(task_json:str):
     try:
@@ -86,18 +89,18 @@ async def process_task(task_json:str):
         task_id = task_data["task_id"]
         urls = task_data["urls"]
 
-        print(f"Начинаю обработку задачи {task_id}")
-        print(f"URL-адресов для проверки: {len(urls)}")
+        logger.info(f"Начинаю обработку задачи {task_id}")
+        logger.info(f"URL-адресов для проверки: {len(urls)}")
 
         results = await check_urls(urls)
         await save_results(task_id, results)
 
-        print(f"Задача {task_id} успешно обработана!")
+        logger.info(f"Задача {task_id} успешно обработана!")
 
     except json.JSONDecodeError:
-        print("Ошибка: не удалось распарсить JSON задачи")
+        logger.error("Ошибка: не удалось распарсить JSON задачи")
     except Exception as e:
-        print(f"Ошибка при обработке задачи {e}")
+        logger.error(f"Ошибка при обработке задачи {e}")
 
 async def run_worker():
     print("Запуск воркера. Ожидание задач в очереди 'task_queue'...")
@@ -118,14 +121,16 @@ async def run_worker():
 
            if result:
                queue_name, task_json = result
-               print(f"Воркер получил задачу из очереди '{queue_name}'")
+               logger.info(f"Воркер получил задачу из очереди '{queue_name}'")
                await process_task(task_json)
            else:
                print("Таймаут brpop: задач нет, продолжаем ожидание...")
 
         except Exception as e:
-            print(f"Критическая ошибка в цикле воркера: {e}")
+            logger.debug(f"Критическая ошибка в цикле воркера: {e}")
             await asyncio.sleep(5)
+
+    logger.info("Воркер корректно завершил работу. Соединения закрыты.")
 
 
 if __name__ == "__main__":
