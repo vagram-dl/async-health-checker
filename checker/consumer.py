@@ -12,6 +12,21 @@ from core.redis_clients import redis_client
 from checker.models import CheckResult
 import signal
 import logging
+from prometheus_client import Counter, Gauge
+
+tasks_processed_total = Counter(
+    'task_processed_total',
+    'Total number of processed tasks'
+)
+urls_checked_total = Counter(
+    'urls_checked_total',
+    'Total number of checked URLs',
+    ['status']
+)
+active_workers = Gauge(
+    'active_workers',
+    'Current number of active workers'
+)
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +110,8 @@ async def process_task(task_json:str):
         results = await check_urls(urls)
         await save_results(task_id, results)
 
+        tasks_processed_total.inc()
+
         logger.info(f"Задача {task_id} успешно обработана!")
 
     except json.JSONDecodeError:
@@ -103,7 +120,8 @@ async def process_task(task_json:str):
         logger.error(f"Ошибка при обработке задачи {e}")
 
 async def run_worker():
-    print("Запуск воркера. Ожидание задач в очереди 'task_queue'...")
+    logger.info("Запуск воркера. Ожидание задач в очереди 'task_queue'...")
+    active_workers.inc()
     loop = asyncio.get_running_loop()
     try:
         for sig in (signal.SIGINT, signal.SIGTERM):
@@ -130,6 +148,7 @@ async def run_worker():
             logger.debug(f"Критическая ошибка в цикле воркера: {e}")
             await asyncio.sleep(5)
 
+    active_workers.dec()
     logger.info("Воркер корректно завершил работу. Соединения закрыты.")
 
 

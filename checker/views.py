@@ -31,7 +31,7 @@ class CreateTaskView(APIView):
 
 class GetTaskView(APIView):
     @extend_schema(responses={200: dict})
-    async def get(self, request, task_id: uuid.UUID):
+    def get(self, request, task_id: uuid.UUID):
         results = CheckResult.objects.filter(task_id=task_id)
 
         if not results.exists():
