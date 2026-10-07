@@ -4,7 +4,6 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
-import json
 import asyncio
 import time
 import aiohttp
@@ -14,8 +13,9 @@ import signal
 import logging
 from prometheus_client import Counter, Gauge
 
+
 tasks_processed_total = Counter(
-    'task_processed_total',
+    'tasks_processed_total',
     'Total number of processed tasks'
 )
 urls_checked_total = Counter(
